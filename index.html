@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Website resmi kelas X PPLG 2 — Galeri, Profil Siswa terbaik." />
+  <meta name="keywords" content="X PPLG 2, kelas, siswa, galeri, SMK" />
+  <meta name="author" content="X PPLG 2" />
+  <title>X PPLG 2 — Official Class Website</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
+    rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- ===================== NAVBAR ===================== -->
+  <nav class="navbar" id="navbar" role="navigation" aria-label="Main navigation">
+    <div class="nav-container">
+      <a href="#home" class="nav-logo" aria-label="X PPLG 2 Home">
+        <span class="logo-bracket"></span>&nbsp;X PPLG 2&nbsp;<span class="logo-bracket"></span>
+      </a>
+
+      <div class="nav-right">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode" title="Toggle Theme">
+          <span class="theme-toggle-track">
+            <span class="theme-toggle-thumb">
+              <i class="fa-solid fa-moon theme-icon-dark"></i>
+              <i class="fa-solid fa-sun theme-icon-light"></i>
+            </span>
+          </span>
+        </button>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+
+      <ul class="nav-links" id="navLinks" role="list">
+        <li><a href="#home" class="nav-link active" data-section="home">Home</a></li>
+        <li><a href="#gallery" class="nav-link" data-section="gallery">Gallery</a></li>
+        <li><a href="#homeroom" class="nav-link" data-section="homeroom">Wali Kelas</a></li>
+        <li><a href="#students" class="nav-link" data-section="students">Students</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ===================== HOME / HERO ===================== -->
+  <section class="hero" id="home" aria-label="Hero section">
+    <div class="parallax-layer parallax-bg" data-speed="0.3"></div>
+    <div class="parallax-layer parallax-grid" data-speed="0.15"></div>
+    <div class="parallax-layer parallax-particles" id="parallaxParticles" data-speed="0.5"></div>
+    <div class="parallax-layer parallax-orb orb-1" data-speed="0.4"></div>
+    <div class="parallax-layer parallax-orb orb-2" data-speed="0.6"></div>
+    <div class="parallax-layer parallax-orb orb-3" data-speed="0.25"></div>
+
+    <div class="hero-container">
+      <div class="hero-badge reveal">
+        <span class="badge-dot"></span>
+        Tahun Ajaran 2025/2026
+      </div>
+      <h1 class="hero-title reveal reveal-delay-1">
+        <span class="title-line">Kelas</span>
+        <span class="title-line title-accent">X PPLG 2</span>
+        <span class="title-line title-sub">Pengembangan Perangkat Lunak</span>
+      </h1>
+      <p class="hero-desc reveal reveal-delay-2">
+        Kami adalah generasi penerus teknologi. Belajar, berkarya, dan berkembang bersama dalam satu kelas yang penuh
+        semangat dan kreativitas.
+      </p>
+      <div class="hero-cta reveal reveal-delay-3">
+        <a href="#gallery" class="btn btn-primary">Lihat Galeri <i class="fa-solid fa-arrow-right"></i></a>
+        <a href="#students" class="btn btn-outline">Kenali Kami</a>
+      </div>
+      <div class="hero-stats reveal reveal-delay-4">
+        <div class="stat-item">
+          <span class="stat-number" data-target="36">0</span>
+          <span class="stat-label">Siswa</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number" data-target="11">0</span>
+          <span class="stat-label">Galeri</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number" data-target="6">0</span>
+          <span class="stat-label">Proyek</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-deco deco-1">PPLG</div>
+    <div class="hero-deco deco-2">2025</div>
+    <div class="hero-scroll-hint">
+      <span>Scroll</span>
+      <i class="fa-solid fa-chevron-down"></i>
+    </div>
+  </section>
+
+  <!-- ===================== GALLERY ===================== -->
+  <section class="section gallery-section" id="gallery" aria-label="Gallery section">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">// 01</span>
+        <h2 class="section-title">Galeri Kelas</h2>
+        <p class="section-desc">Momen-momen berharga yang kami abadikan sepanjang tahun ajaran ini.</p>
+      </div>
+      <div class="gallery-filter reveal">
+        <button class="filter-btn active" data-filter="all">Semua</button>
+        <button class="filter-btn" data-filter="kegiatan">Kegiatan</button>
+        <button class="filter-btn" data-filter="foto">Foto Kelas</button>
+        <button class="filter-btn" data-filter="event">Event</button>
+      </div>
+      <div class="gallery-grid" id="galleryGrid"></div>
+      <div class="gallery-pagination reveal" id="galleryPagination"></div>
+    </div>
+  </section>
+
+  <!-- ===================== LIGHTBOX ===================== -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image preview">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Close preview"><i
+        class="fa-solid fa-xmark"></i></button>
+    <button class="lightbox-prev" id="lightboxPrev" aria-label="Previous image"><i
+        class="fa-solid fa-chevron-left"></i></button>
+    <button class="lightbox-next" id="lightboxNext" aria-label="Next image"><i
+        class="fa-solid fa-chevron-right"></i></button>
+    <div class="lightbox-content">
+      <img src="" alt="" id="lightboxImg" />
+      <div class="lightbox-caption" id="lightboxCaption"></div>
+    </div>
+  </div>
+
+  <!-- ===================== HOMEROOM TEACHER ===================== -->
+  <section class="section homeroom-section" id="homeroom" aria-label="Homeroom teacher section">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">// 02</span>
+        <h2 class="section-title">Guru Wali Kelas</h2>
+        <p class="section-desc">Sosok yang membimbing dan menginspirasi kami setiap hari.</p>
+      </div>
+      <div class="homeroom-wrapper reveal">
+        <div class="homeroom-card" id="homeroomCard"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== STUDENTS ===================== -->
+  <section class="section students-section" id="students" aria-label="Students section">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">// 03</span>
+        <h2 class="section-title">Profil Siswa</h2>
+        <p class="section-desc">Kenali teman-teman luar biasa dari kelas X PPLG 2. Pencet acak siswa nya satu kali aja
+          teman teman 😄</p>
+      </div>
+
+      <!-- Action buttons row -->
+      <div class="students-actions reveal">
+        <button class="btn-random-picker" id="btnRandomPicker" aria-label="Acak siswa secara random">
+          <i class="fa-solid fa-dice"></i>
+          <span>Acak Siswa</span>
+        </button>
+        <!-- NEW: Group Picker Button -->
+        <button class="btn-group-picker" id="btnGroupPicker" aria-label="Bagi kelompok siswa">
+          <i class="fa-solid fa-people-group"></i>
+          <span>Acak Kelompok</span>
+        </button>
+      </div>
+
+      <!-- Search -->
+      <div class="students-search reveal">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="studentSearch" placeholder="Cari nama siswa..." aria-label="Cari siswa" />
+        </div>
+      </div>
+
+      <div class="students-grid" id="studentsGrid"></div>
+      <div class="students-pagination reveal" id="studentsPagination"></div>
+    </div>
+  </section>
+
+  <!-- ===================== STUDENT PHOTO MODAL ===================== -->
+  <div class="student-modal" id="studentModal" role="dialog" aria-modal="true" aria-label="Student photo">
+    <div class="student-modal-backdrop" id="studentModalBackdrop"></div>
+    <div class="student-modal-content">
+      <button class="student-modal-close" id="studentModalClose" aria-label="Tutup">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="student-modal-photo-wrap">
+        <img src="" alt="" id="studentModalImg" />
+        <div class="student-modal-placeholder" id="studentModalPlaceholder"></div>
+      </div>
+      <div class="student-modal-info">
+        <span class="student-modal-number" id="studentModalNumber"></span>
+        <h3 class="student-modal-name" id="studentModalName"></h3>
+        <span class="student-modal-role" id="studentModalRole"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== RANDOM STUDENT MODAL ===================== -->
+  <div class="random-modal" id="randomModal" role="dialog" aria-modal="true" aria-label="Random student result">
+    <div class="random-modal-backdrop" id="randomModalBackdrop"></div>
+    <div class="random-modal-content">
+      <button class="random-modal-close" id="randomModalClose" aria-label="Tutup">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="random-modal-header">
+        <div class="random-dice-icon">
+          <i class="fa-solid fa-dice-six" id="randomDiceIcon"></i>
+        </div>
+        <h3>Siswa Terpilih!</h3>
+        <p>Selamat, kamu dipanggil hari ini!</p>
+      </div>
+      <div class="random-modal-photo-wrap">
+        <img src="" alt="" id="randomModalImg" />
+        <div class="random-modal-placeholder" id="randomModalPlaceholder"></div>
+      </div>
+      <div class="random-modal-info">
+        <span class="random-modal-number" id="randomModalNumber"></span>
+        <h3 class="random-modal-name" id="randomModalName"></h3>
+        <span class="random-modal-role">Siswa X PPLG 2</span>
+      </div>
+      <button class="btn btn-primary random-again-btn" id="randomAgainBtn">
+        <i class="fa-solid fa-rotate"></i> Acak Lagi
+      </button>
+    </div>
+  </div>
+
+  <!-- ===================== GROUP PICKER MODAL (NEW) ===================== -->
+  <div class="group-modal" id="groupModal" role="dialog" aria-modal="true" aria-label="Random group result">
+    <div class="group-modal-backdrop" id="groupModalBackdrop"></div>
+    <div class="group-modal-content">
+      <button class="group-modal-close" id="groupModalClose" aria-label="Tutup">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <!-- Header -->
+      <div class="group-modal-header">
+        <div class="group-icon-wrap">
+          <i class="fa-solid fa-people-group"></i>
+        </div>
+        <h3>Acak Kelompok</h3>
+        <p>Atur pembagian kelompok secara acak dan adil</p>
+      </div>
+
+      <!-- Config Panel -->
+      <div class="group-config" id="groupConfig">
+        <div class="group-config-row">
+          <label class="group-config-label">
+            <i class="fa-solid fa-layer-group"></i>
+            Jumlah Kelompok
+          </label>
+          <div class="group-stepper">
+            <button class="stepper-btn" id="groupCountMinus" aria-label="Kurangi">
+              <i class="fa-solid fa-minus"></i>
+            </button>
+            <span class="stepper-val" id="groupCountVal">4</span>
+            <button class="stepper-btn" id="groupCountPlus" aria-label="Tambah">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+        </div>
+        <div class="group-config-row">
+          <label class="group-config-label">
+            <i class="fa-solid fa-users"></i>
+            Anggota per Kelompok
+          </label>
+          <span class="group-members-preview" id="groupMembersPreview">~9 siswa</span>
+        </div>
+        <div class="group-config-row">
+          <label class="group-config-label">
+            <i class="fa-solid fa-shuffle"></i>
+            Mode Acak
+          </label>
+          <div class="group-mode-select">
+            <button class="mode-btn active" data-mode="random">Acak</button>
+            <button class="mode-btn" data-mode="balanced">Seimbang</button>
+          </div>
+        </div>
+        <button class="btn btn-primary group-generate-btn" id="groupGenerateBtn">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          Bagi Kelompok!
+        </button>
+      </div>
+
+      <!-- Results Panel -->
+      <div class="group-results" id="groupResults" style="display:none;">
+        <div class="group-results-header">
+          <span class="group-results-label" id="groupResultsLabel">4 Kelompok · 37 Siswa</span>
+          <button class="group-shuffle-again" id="groupShuffleAgain">
+            <i class="fa-solid fa-shuffle"></i> Acak Ulang
+          </button>
+        </div>
+        <div class="groups-container" id="groupsContainer"></div>
+        <div class="group-results-actions">
+          <button class="btn btn-outline group-copy-btn" id="groupCopyBtn">
+            <i class="fa-solid fa-copy"></i> Salin Hasil
+          </button>
+          <button class="btn btn-primary" id="groupBackBtn">
+            <i class="fa-solid fa-arrow-left"></i> Ubah Jumlah
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="nav-logo"><span class="logo-bracket"></span>&nbsp;X PPLG 2&nbsp;<span
+              class="logo-bracket"></span></span>
+          <p>Pengembangan Perangkat Lunak &amp; Gim — Generasi Digital Masa Depan.</p>
+        </div>
+        <div class="footer-links">
+          <a href="#home">Home</a>
+          <a href="#gallery">Gallery</a>
+          <a href="#homeroom">Wali Kelas</a>
+          <a href="#students">Students</a>
+
+        </div>
+        <div class="footer-social">
+          <a href="https://www.instagram.com/elpiji_twobraka?igsh=MWlhajk0d2tha20zdQ==" aria-label="Instagram"
+            class="social-link"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://youtube.com/@smkbrantaskarangkates?si=gUKsfggL1e3qEkbh" aria-label="YouTube"
+            class="social-link"><i class="fa-brands fa-youtube"></i></a>
+          <a href="https://www.tiktok.com/@elpiji_twobraka?_r=1&_t=ZS-96eOuFXqCka" aria-label="TikTok"
+            class="social-link"><i class="fa-brands fa-tiktok"></i></a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 X PPLG 2. Dibuat dengan <i class="fa-solid fa-heart"></i> oleh siswa kelas.</p>
+      </div>
+    </div>
+  </footer>
+
+  <button class="back-to-top" id="backToTop" aria-label="Kembali ke atas">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
+
+  <script src="java/script.js"></script>
+</body>
+
+</html>
