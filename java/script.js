@@ -1,9 +1,11 @@
 /**
  * X PPLG 2 — Official Class Website
- * script.js — Main JavaScript
- * Features: Parallax, Dark/Light Mode, Student Modal,
- *           Random Student Picker, Homeroom Card,
- *           Group Picker (NEW), Student Card Glow (NEW)
+ * script.js — Main JavaScript (REVISI)
+ * Tambahan:
+ *  - Group export PNG & PDF (html2canvas + jsPDF)
+ *  - Mode per-anggota (berdasarkan jumlah anggota/kelompok)
+ *  - Max 18 kelompok
+ *  - Mobile responsive improvements
  * ============================================================
  */
 
@@ -78,26 +80,32 @@ const STUDENTS_DATA = [
   { no: 37, name: "Yunita Salsabila", role: "Siswa", initials: "YS", img: "image/Siswa/37. YUNITA SALSABILA.jpg" },
 ];
 
-
-/* Color palette for groups */
+/* Color palette for groups — 18 warna */
 const GROUP_COLORS = [
-  { bg: "#7c6aff", text: "#fff", glow: "rgba(124,106,255,0.25)" },
+  { bg: "#1a6fff", text: "#fff", glow: "rgba(26,111,255,0.25)" },
   { bg: "#ff6ab0", text: "#fff", glow: "rgba(255,106,176,0.25)" },
-  { bg: "#6affca", text: "#0a0a0f", glow: "rgba(106,255,202,0.25)" },
+  { bg: "#22e87a", text: "#0a0a0f", glow: "rgba(34,232,122,0.25)" },
   { bg: "#ffd06a", text: "#0a0a0f", glow: "rgba(255,208,106,0.25)" },
   { bg: "#ff8c6a", text: "#fff", glow: "rgba(255,140,106,0.25)" },
-  { bg: "#6aaeff", text: "#fff", glow: "rgba(106,174,255,0.25)" },
+  { bg: "#6aaeff", text: "#0a0a0f", glow: "rgba(106,174,255,0.25)" },
   { bg: "#d06aff", text: "#fff", glow: "rgba(208,106,255,0.25)" },
   { bg: "#6aff8c", text: "#0a0a0f", glow: "rgba(106,255,140,0.25)" },
+  { bg: "#ff4d4d", text: "#fff", glow: "rgba(255,77,77,0.25)" },
+  { bg: "#4dffee", text: "#0a0a0f", glow: "rgba(77,255,238,0.25)" },
+  { bg: "#c8ff4d", text: "#0a0a0f", glow: "rgba(200,255,77,0.25)" },
+  { bg: "#ff4da6", text: "#fff", glow: "rgba(255,77,166,0.25)" },
+  { bg: "#4d8aff", text: "#fff", glow: "rgba(77,138,255,0.25)" },
+  { bg: "#ff9f4d", text: "#0a0a0f", glow: "rgba(255,159,77,0.25)" },
+  { bg: "#4dffb8", text: "#0a0a0f", glow: "rgba(77,255,184,0.25)" },
+  { bg: "#9b4dff", text: "#fff", glow: "rgba(155,77,255,0.25)" },
+  { bg: "#ff4d6a", text: "#fff", glow: "rgba(255,77,106,0.25)" },
+  { bg: "#4dd9ff", text: "#0a0a0f", glow: "rgba(77,217,255,0.25)" },
 ];
 
 /* ============================================================
    UTILITY
    ============================================================ */
 
-/**
- * Fisher-Yates shuffle — returns a new shuffled copy of the array.
- */
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -107,7 +115,6 @@ function shuffle(arr) {
   return a;
 }
 
-/** Generate an SVG data URI placeholder image */
 function generatePlaceholderSrc(id, title) {
   const hue = (id * 47 + 180) % 360;
   const hue2 = (hue + 60) % 360;
@@ -129,17 +136,13 @@ function generatePlaceholderSrc(id, title) {
   return `data:image/svg+xml;utf8,${encodeURIComponent(svgContent)}`;
 }
 
-/** Show a brief toast notification */
 function showToast(msg, icon = 'fa-check-circle') {
-  // Remove existing toast
   const existing = document.querySelector('.toast');
   if (existing) existing.remove();
-
   const toast = document.createElement('div');
   toast.className = 'toast';
   toast.innerHTML = `<i class="fa-solid ${icon}"></i> ${msg}`;
   document.body.appendChild(toast);
-
   requestAnimationFrame(() => {
     toast.classList.add('show');
     setTimeout(() => {
@@ -150,7 +153,35 @@ function showToast(msg, icon = 'fa-check-circle') {
 }
 
 /* ============================================================
-   THEME MODULE — Dark / Light Mode
+   EXPORT LOADING OVERLAY
+   ============================================================ */
+function createExportLoadingEl() {
+  let el = document.getElementById('exportLoadingOverlay');
+  if (el) return el;
+  el = document.createElement('div');
+  el.id = 'exportLoadingOverlay';
+  el.className = 'export-loading';
+  el.innerHTML = `
+    <div class="export-loading-spinner"></div>
+    <p id="exportLoadingMsg">Menyiapkan ekspor...</p>
+  `;
+  document.body.appendChild(el);
+  return el;
+}
+
+function showExportLoading(msg = 'Menyiapkan ekspor...') {
+  const el = createExportLoadingEl();
+  document.getElementById('exportLoadingMsg').textContent = msg;
+  el.classList.add('show');
+}
+
+function hideExportLoading() {
+  const el = document.getElementById('exportLoadingOverlay');
+  if (el) el.classList.remove('show');
+}
+
+/* ============================================================
+   THEME MODULE
    ============================================================ */
 const Theme = (() => {
   const STORAGE_KEY = 'xpplg2-theme';
@@ -335,7 +366,6 @@ const Gallery = (() => {
     const pg = getPagination();
     const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
     if (totalPages <= 1) { pg.innerHTML = ''; return; }
-
     let html = '';
     for (let i = 1; i <= totalPages; i++) {
       html += `<button class="page-btn${i === currentPage ? ' active' : ''}" data-page="${i}">${i}</button>`;
@@ -378,7 +408,6 @@ const Gallery = (() => {
 
   function init() {
     renderGallery();
-
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -388,12 +417,10 @@ const Gallery = (() => {
         renderGallery();
       });
     });
-
     document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
     document.getElementById('lightboxPrev').addEventListener('click', prevLightbox);
     document.getElementById('lightboxNext').addEventListener('click', nextLightbox);
     getLightbox().addEventListener('click', e => { if (e.target === getLightbox()) closeLightbox(); });
-
     document.addEventListener('keydown', e => {
       if (!getLightbox().classList.contains('open')) return;
       if (e.key === 'Escape') closeLightbox();
@@ -412,21 +439,18 @@ const HomeroomTeacher = (() => {
   function init() {
     const card = document.getElementById('homeroomCard');
     if (!card) return;
-
     const d = HOMEROOM_DATA;
     const photoHTML = d.img
       ? `<img src="${d.img}" alt="Foto ${d.name}" loading="lazy"
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
          <div class="homeroom-photo-placeholder" style="display:none">${d.initials}</div>`
       : `<div class="homeroom-photo-placeholder">${d.initials}</div>`;
-
     const statsHTML = d.stats.map(s => `
       <div class="homeroom-stat">
         <span class="homeroom-stat-val">${s.val}</span>
         <span class="homeroom-stat-lbl">${s.lbl}</span>
       </div>
     `).join('');
-
     card.innerHTML = `
       <div class="homeroom-photo-col">${photoHTML}</div>
       <div class="homeroom-body">
@@ -441,7 +465,6 @@ const HomeroomTeacher = (() => {
       </div>
     `;
   }
-
   return { init };
 })();
 
@@ -498,16 +521,13 @@ const Students = (() => {
 
     renderPagination(filtered.length);
 
-    // Re-observe for reveal
     grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-    // Bind click → open student modal
     grid.querySelectorAll('.student-card').forEach(card => {
       card.addEventListener('click', () => window.openStudentModal(+card.dataset.studentNo));
       card.addEventListener('keydown', e => {
         if (e.key === 'Enter' || e.key === ' ') window.openStudentModal(+card.dataset.studentNo);
       });
-      // Glow effect: track mouse position within card
       card.addEventListener('mousemove', e => {
         const rect = card.getBoundingClientRect();
         const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1) + '%';
@@ -522,7 +542,6 @@ const Students = (() => {
     const pg = getPagination();
     const totalPages = Math.ceil(total / PER_PAGE);
     if (totalPages <= 1) { pg.innerHTML = ''; return; }
-
     let html = '';
     for (let i = 1; i <= totalPages; i++) {
       html += `<button class="page-btn${i === currentPage ? ' active' : ''}" data-page="${i}">${i}</button>`;
@@ -539,7 +558,6 @@ const Students = (() => {
 
   function init() {
     renderStudents();
-
     const input = document.getElementById('studentSearch');
     let debounceTimer;
     input.addEventListener('input', () => {
@@ -711,18 +729,23 @@ const RandomPicker = (() => {
 })();
 
 /* ============================================================
-   GROUP PICKER MODULE (NEW)
-   Splits the student list into N random groups.
-   Supports two modes:
-     - "random"   : fully random shuffle, then split
-     - "balanced" : shuffle then distribute round-robin for
-                    even gender/number spread (uses student order)
+   GROUP PICKER MODULE (REVISI)
+   - Mode: by-groups (max 18) | by-members (otomatis hitung kelompok)
+   - Export PNG & PDF via html2canvas + jsPDF
+   - Responsive mobile
    ============================================================ */
 const GroupPicker = (() => {
   let groupCount = 4;
-  let shuffleMode = 'random';     // 'random' | 'balanced'
-  const MAX_GROUPS = 8;
+  let memberCount = 5;
+  let shuffleMode = 'random';
+  let splitMode = 'by-groups'; // 'by-groups' | 'by-members'
+  const MAX_GROUPS = 18;
   const MIN_GROUPS = 2;
+  const MAX_MEMBERS = Math.floor(STUDENTS_DATA.length / 2);
+  const MIN_MEMBERS = 2;
+
+  /* State for current generated groups */
+  let currentGroups = [];
 
   /* DOM helpers */
   const getModal = () => document.getElementById('groupModal');
@@ -730,40 +753,51 @@ const GroupPicker = (() => {
   const getResults = () => document.getElementById('groupResults');
   const getContainer = () => document.getElementById('groupsContainer');
   const getCountVal = () => document.getElementById('groupCountVal');
+  const getMemberVal = () => document.getElementById('memberCountVal');
   const getPreview = () => document.getElementById('groupMembersPreview');
+  const getCountPreview = () => document.getElementById('groupCountPreview');
   const getResultLabel = () => document.getElementById('groupResultsLabel');
 
   /* ── helpers ── */
 
-  function updatePreview() {
+  function calcByGroups() {
     const total = STUDENTS_DATA.length;
     const base = Math.floor(total / groupCount);
     const extra = total % groupCount;
-    const preview = extra > 0
-      ? `${base}–${base + 1} siswa`
-      : `${base} siswa`;
-    getPreview().textContent = `~${preview}`;
+    return extra > 0 ? `${base}–${base + 1} siswa` : `${base} siswa`;
   }
 
-  /**
-   * Distribute students into groups.
-   * "random"   → shuffle, then split into chunks
-   * "balanced" → shuffle, then distribute round-robin
-   *               so group sizes differ by at most 1
-   */
+  function calcByMembers() {
+    const total = STUDENTS_DATA.length;
+    const est = Math.ceil(total / memberCount);
+    return `~${est} kelompok`;
+  }
+
+  function updatePreview() {
+    if (splitMode === 'by-groups') {
+      getPreview().textContent = `~${calcByGroups()}`;
+    } else {
+      getCountPreview().textContent = calcByMembers();
+    }
+  }
+
   function buildGroups() {
     const students = shuffle(STUDENTS_DATA);
-    const groups = Array.from({ length: groupCount }, () => []);
+    let count = groupCount;
+
+    if (splitMode === 'by-members') {
+      count = Math.ceil(students.length / memberCount);
+    }
+
+    const groups = Array.from({ length: count }, () => []);
 
     if (shuffleMode === 'balanced') {
-      // Round-robin distribution
-      students.forEach((s, i) => groups[i % groupCount].push(s));
+      students.forEach((s, i) => groups[i % count].push(s));
     } else {
-      // Chunk distribution
-      const base = Math.floor(students.length / groupCount);
-      const extra = students.length % groupCount;
+      const base = Math.floor(students.length / count);
+      const extra = students.length % count;
       let idx = 0;
-      for (let g = 0; g < groupCount; g++) {
+      for (let g = 0; g < count; g++) {
         const size = base + (g < extra ? 1 : 0);
         groups[g] = students.slice(idx, idx + size);
         idx += size;
@@ -773,6 +807,7 @@ const GroupPicker = (() => {
   }
 
   function renderGroups(groups) {
+    currentGroups = groups;
     const container = getContainer();
     container.innerHTML = groups.map((members, gi) => {
       const color = GROUP_COLORS[gi % GROUP_COLORS.length];
@@ -784,7 +819,7 @@ const GroupPicker = (() => {
       `).join('');
 
       return `
-        <div class="group-card" style="animation-delay:${gi * 0.07}s; box-shadow: 0 4px 20px ${color.glow}; border-color: ${color.bg}22;">
+        <div class="group-card" style="animation-delay:${gi * 0.07}s; box-shadow: 0 4px 20px ${color.glow}; border-color: ${color.bg}33;">
           <div class="group-card-header" style="background:${color.bg};">
             <div class="group-card-dot" style="background:#fff; opacity:0.7;"></div>
             <span class="group-card-title">Kelompok ${gi + 1}</span>
@@ -798,10 +833,15 @@ const GroupPicker = (() => {
   function generate() {
     const groups = buildGroups();
     renderGroups(groups);
-    getResultLabel().textContent =
-      `${groupCount} Kelompok · ${STUDENTS_DATA.length} Siswa · Mode: ${shuffleMode === 'balanced' ? 'Seimbang' : 'Acak'}`;
 
-    // Switch to results view with animation
+    const modeLabel = shuffleMode === 'balanced' ? 'Seimbang' : 'Acak';
+    const splitLabel = splitMode === 'by-members'
+      ? `per ${memberCount} siswa`
+      : `${groups.length} Kelompok`;
+
+    getResultLabel().textContent =
+      `${groups.length} Kelompok · ${STUDENTS_DATA.length} Siswa · ${splitLabel} · Mode: ${modeLabel}`;
+
     getConfig().style.display = 'none';
     getResults().style.display = 'block';
   }
@@ -812,7 +852,6 @@ const GroupPicker = (() => {
   }
 
   function open() {
-    // Reset to config every time
     showConfig();
     updatePreview();
     getModal().classList.add('open');
@@ -824,14 +863,13 @@ const GroupPicker = (() => {
     document.body.style.overflow = '';
   }
 
-  /* Copy results as plain text */
+  /* ── COPY ── */
   function copyResults() {
-    const cards = document.querySelectorAll('.group-card');
     let text = `=== Pembagian Kelompok X PPLG 2 ===\n\n`;
-    cards.forEach((card, gi) => {
+    currentGroups.forEach((members, gi) => {
       text += `Kelompok ${gi + 1}:\n`;
-      card.querySelectorAll('.group-member-row').forEach(row => {
-        text += `  ${row.textContent.trim().replace(/\s+/g, ' ')}\n`;
+      members.forEach(s => {
+        text += `  #${String(s.no).padStart(2, '0')} ${s.name}\n`;
       });
       text += '\n';
     });
@@ -840,15 +878,159 @@ const GroupPicker = (() => {
       .catch(() => showToast('Gagal menyalin. Coba lagi.', 'fa-times-circle'));
   }
 
-  function init() {
-    /* Open trigger */
-    document.getElementById('btnGroupPicker').addEventListener('click', open);
+  /* ── BUILD SNAPSHOT ELEMENT ── */
+  function buildSnapshotElement() {
+    let snap = document.getElementById('groupExportSnapshot');
+    if (snap) snap.remove();
 
-    /* Close */
+    snap = document.createElement('div');
+    snap.id = 'groupExportSnapshot';
+
+    const now = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    const groupCount_ = currentGroups.length;
+
+    const cardsHTML = currentGroups.map((members, gi) => {
+      const color = GROUP_COLORS[gi % GROUP_COLORS.length];
+      const membersHTML = members.map(s =>
+        `<div class="snap-member">
+          <span class="snap-member-num">#${String(s.no).padStart(2, '0')}</span>
+          <span>${s.name}</span>
+        </div>`
+      ).join('');
+      return `
+        <div class="snap-card" style="border-color:${color.bg}33;">
+          <div class="snap-card-header" style="background:${color.bg};">
+            <span class="snap-card-title">Kelompok ${gi + 1}</span>
+            <span class="snap-card-count">${members.length} siswa</span>
+          </div>
+          <div class="snap-members">${membersHTML}</div>
+        </div>`;
+    }).join('');
+
+    snap.innerHTML = `
+      <div class="snap-header">
+        <div class="snap-title">Pembagian Kelompok X PPLG 2</div>
+        <div class="snap-subtitle">${groupCount_} Kelompok · ${STUDENTS_DATA.length} Siswa · ${now}</div>
+      </div>
+      <div class="snap-grid">${cardsHTML}</div>
+      <div class="snap-footer">X PPLG 2 · SMK Brantas Karangkates · ${now}</div>
+    `;
+
+    document.body.appendChild(snap);
+    return snap;
+  }
+
+  /* ── EXPORT PNG ── */
+  async function exportPNG() {
+    if (!window.html2canvas) {
+      showToast('html2canvas belum dimuat. Coba lagi.', 'fa-times-circle');
+      return;
+    }
+    showExportLoading('Membuat gambar PNG...');
+    try {
+      const snap = buildSnapshotElement();
+      // Wait a tick for fonts/images
+      await new Promise(r => setTimeout(r, 300));
+
+      const canvas = await window.html2canvas(snap, {
+        backgroundColor: '#0a0a0f',
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        width: snap.offsetWidth,
+        height: snap.offsetHeight,
+      });
+
+      snap.remove();
+      hideExportLoading();
+
+      const link = document.createElement('a');
+      link.download = `kelompok-xpplg2-${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+
+      showToast('PNG berhasil diunduh!', 'fa-image');
+    } catch (err) {
+      snap?.remove();
+      hideExportLoading();
+      console.error('Export PNG error:', err);
+      showToast('Gagal ekspor PNG. Coba lagi.', 'fa-times-circle');
+    }
+  }
+
+  /* ── EXPORT PDF ── */
+  async function exportPDF() {
+    if (!window.html2canvas) {
+      showToast('html2canvas belum dimuat. Coba lagi.', 'fa-times-circle');
+      return;
+    }
+    if (!window.jspdf && !window.jsPDF) {
+      showToast('jsPDF belum dimuat. Coba lagi.', 'fa-times-circle');
+      return;
+    }
+    showExportLoading('Membuat file PDF...');
+    try {
+      const snap = buildSnapshotElement();
+      await new Promise(r => setTimeout(r, 300));
+
+      const canvas = await window.html2canvas(snap, {
+        backgroundColor: '#0a0a0f',
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        width: snap.offsetWidth,
+        height: snap.offsetHeight,
+      });
+
+      snap.remove();
+
+      const imgData = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf || window;
+      const orientation = canvas.width > canvas.height ? 'landscape' : 'portrait';
+      const pdf = new jsPDF({
+        orientation,
+        unit: 'px',
+        format: [canvas.width / 2, canvas.height / 2],
+      });
+
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
+      pdf.save(`kelompok-xpplg2-${Date.now()}.pdf`);
+
+      hideExportLoading();
+      showToast('PDF berhasil diunduh!', 'fa-file-pdf');
+    } catch (err) {
+      snap?.remove();
+      hideExportLoading();
+      console.error('Export PDF error:', err);
+      showToast('Gagal ekspor PDF. Coba lagi.', 'fa-times-circle');
+    }
+  }
+
+  /* ── INIT ── */
+  function init() {
+    document.getElementById('btnGroupPicker').addEventListener('click', open);
     document.getElementById('groupModalClose').addEventListener('click', close);
     document.getElementById('groupModalBackdrop').addEventListener('click', close);
 
-    /* Stepper: minus */
+    /* Split mode toggle */
+    document.querySelectorAll('.split-mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.split-mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        splitMode = btn.dataset.split;
+
+        if (splitMode === 'by-groups') {
+          document.getElementById('panelByGroups').style.display = 'flex';
+          document.getElementById('panelByMembers').style.display = 'none';
+        } else {
+          document.getElementById('panelByGroups').style.display = 'none';
+          document.getElementById('panelByMembers').style.display = 'flex';
+        }
+        updatePreview();
+      });
+    });
+
+    /* Stepper: group count */
     document.getElementById('groupCountMinus').addEventListener('click', () => {
       if (groupCount > MIN_GROUPS) {
         groupCount--;
@@ -856,12 +1038,26 @@ const GroupPicker = (() => {
         updatePreview();
       }
     });
-
-    /* Stepper: plus */
     document.getElementById('groupCountPlus').addEventListener('click', () => {
       if (groupCount < MAX_GROUPS) {
         groupCount++;
         getCountVal().textContent = groupCount;
+        updatePreview();
+      }
+    });
+
+    /* Stepper: member count */
+    document.getElementById('memberCountMinus').addEventListener('click', () => {
+      if (memberCount > MIN_MEMBERS) {
+        memberCount--;
+        getMemberVal().textContent = memberCount;
+        updatePreview();
+      }
+    });
+    document.getElementById('memberCountPlus').addEventListener('click', () => {
+      if (memberCount < MAX_MEMBERS) {
+        memberCount++;
+        getMemberVal().textContent = memberCount;
         updatePreview();
       }
     });
@@ -878,7 +1074,7 @@ const GroupPicker = (() => {
     /* Generate */
     document.getElementById('groupGenerateBtn').addEventListener('click', generate);
 
-    /* Shuffle again (from results) */
+    /* Shuffle again */
     document.getElementById('groupShuffleAgain').addEventListener('click', generate);
 
     /* Back to config */
@@ -887,15 +1083,23 @@ const GroupPicker = (() => {
     /* Copy */
     document.getElementById('groupCopyBtn').addEventListener('click', copyResults);
 
-    /* Keyboard escape */
+    /* Export PNG */
+    document.getElementById('groupExportPng').addEventListener('click', exportPNG);
+
+    /* Export PDF */
+    document.getElementById('groupExportPdf').addEventListener('click', exportPDF);
+
+    /* Escape close */
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && getModal().classList.contains('open')) close();
     });
+
+    /* Init preview */
+    updatePreview();
   }
 
   return { init };
 })();
-
 
 /* ============================================================
    NAVBAR MODULE
@@ -970,7 +1174,7 @@ function initReveal() {
 }
 
 /* ============================================================
-   COUNTER ANIMATION (Hero stats)
+   COUNTER ANIMATION
    ============================================================ */
 function animateCounters() {
   const counterObserver = new IntersectionObserver((entries) => {
@@ -1026,14 +1230,14 @@ function initSmoothScroll() {
    INIT — DOMContentLoaded
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
-  Theme.init();           // Dark/light mode (first — before render)
+  Theme.init();
   Navbar.init();
-  Parallax.init();        // Parallax + particles
+  Parallax.init();
   Gallery.init();
   HomeroomTeacher.init();
-  Students.init();        // Student grid + glow effect
-  RandomPicker.init();    // Dice random picker
-  GroupPicker.init();     // Group picker (NEW)
+  Students.init();
+  RandomPicker.init();
+  GroupPicker.init();
 
   initReveal();
   animateCounters();
