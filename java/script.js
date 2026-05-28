@@ -30,7 +30,7 @@ const GALLERY_DATA = [
   { id: 5, title: "Foto Kelas", category: "foto", img: "image/Gallery/formal.jpg", tags: ["Angkatan 2025"] },
   { id: 2, title: "Cowo Kelas PPLG 2", category: "foto", img: "image/Gallery/cowo1.jpg", tags: ["Angkatan 2025"] },
   { id: 4, title: "Miniatur Pengolahan Bahan", category: "kegiatan", img: "image/Gallery/minimap.jpg", tags: ["Sumatif 3"] },
-  { id: 6, title: "Girl Futsal", category: "kegiatan", img: "image/Gallery/bola.jpg", tags: ["Lapangan"] },
+  { id: 6, title: "Hari Pahlawan", category: "event", img: "image/Gallery/IMG-20251028-WA0069.jpg", tags: ["Lapangan"] },
   { id: 8, title: "Ngerujak", category: "kegiatan", img: "image/Gallery/IMG-20251025-WA0063.jpg", tags: ["Rutin"] },
   { id: 10, title: "Bukber", category: "kegiatan", img: "image/Gallery/bukber.jpg", tags: ["Belajar"] },
   { id: 12, title: "Peringatan Hari Guru", category: "event", img: "image/Gallery/motion_photo_6586712432520767369.jpg", tags: ["Hari Spesial"] },
