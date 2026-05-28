@@ -17,7 +17,10 @@
     rel="stylesheet" />
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="css/style.css">
+  <!-- html2canvas & jsPDF for export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="stylesheet" href="CSS/style.css">
 </head>
 
 <body>
@@ -168,7 +171,6 @@
           <i class="fa-solid fa-dice"></i>
           <span>Acak Siswa</span>
         </button>
-        <!-- NEW: Group Picker Button -->
         <button class="btn-group-picker" id="btnGroupPicker" aria-label="Bagi kelompok siswa">
           <i class="fa-solid fa-people-group"></i>
           <span>Acak Kelompok</span>
@@ -236,7 +238,7 @@
     </div>
   </div>
 
-  <!-- ===================== GROUP PICKER MODAL (NEW) ===================== -->
+  <!-- ===================== GROUP PICKER MODAL (REVISI) ===================== -->
   <div class="group-modal" id="groupModal" role="dialog" aria-modal="true" aria-label="Random group result">
     <div class="group-modal-backdrop" id="groupModalBackdrop"></div>
     <div class="group-modal-content">
@@ -255,28 +257,74 @@
 
       <!-- Config Panel -->
       <div class="group-config" id="groupConfig">
-        <div class="group-config-row">
-          <label class="group-config-label">
+
+        <!-- Mode: per kelompok atau jumlah kelompok -->
+        <div class="group-config-section-label">
+          <i class="fa-solid fa-sliders"></i> Mode Pembagian
+        </div>
+        <div class="group-split-mode">
+          <button class="split-mode-btn active" data-split="by-groups" id="splitByGroups">
             <i class="fa-solid fa-layer-group"></i>
-            Jumlah Kelompok
-          </label>
-          <div class="group-stepper">
-            <button class="stepper-btn" id="groupCountMinus" aria-label="Kurangi">
-              <i class="fa-solid fa-minus"></i>
-            </button>
-            <span class="stepper-val" id="groupCountVal">4</span>
-            <button class="stepper-btn" id="groupCountPlus" aria-label="Tambah">
-              <i class="fa-solid fa-plus"></i>
-            </button>
+            <span>Berdasarkan<br><strong>Jumlah Kelompok</strong></span>
+          </button>
+          <button class="split-mode-btn" data-split="by-members" id="splitByMembers">
+            <i class="fa-solid fa-user-group"></i>
+            <span>Berdasarkan<br><strong>Anggota/Kelompok</strong></span>
+          </button>
+        </div>
+
+        <!-- By Groups -->
+        <div class="group-config-panel" id="panelByGroups">
+          <div class="group-config-row">
+            <label class="group-config-label">
+              <i class="fa-solid fa-layer-group"></i>
+              Jumlah Kelompok
+            </label>
+            <div class="group-stepper">
+              <button class="stepper-btn" id="groupCountMinus" aria-label="Kurangi">
+                <i class="fa-solid fa-minus"></i>
+              </button>
+              <span class="stepper-val" id="groupCountVal">4</span>
+              <button class="stepper-btn" id="groupCountPlus" aria-label="Tambah">
+                <i class="fa-solid fa-plus"></i>
+              </button>
+            </div>
+          </div>
+          <div class="group-config-row">
+            <label class="group-config-label">
+              <i class="fa-solid fa-users"></i>
+              Anggota per Kelompok
+            </label>
+            <span class="group-members-preview" id="groupMembersPreview">~9 siswa</span>
           </div>
         </div>
-        <div class="group-config-row">
-          <label class="group-config-label">
-            <i class="fa-solid fa-users"></i>
-            Anggota per Kelompok
-          </label>
-          <span class="group-members-preview" id="groupMembersPreview">~9 siswa</span>
+
+        <!-- By Members -->
+        <div class="group-config-panel" id="panelByMembers" style="display:none;">
+          <div class="group-config-row">
+            <label class="group-config-label">
+              <i class="fa-solid fa-user-group"></i>
+              Anggota per Kelompok
+            </label>
+            <div class="group-stepper">
+              <button class="stepper-btn" id="memberCountMinus" aria-label="Kurangi">
+                <i class="fa-solid fa-minus"></i>
+              </button>
+              <span class="stepper-val" id="memberCountVal">5</span>
+              <button class="stepper-btn" id="memberCountPlus" aria-label="Tambah">
+                <i class="fa-solid fa-plus"></i>
+              </button>
+            </div>
+          </div>
+          <div class="group-config-row">
+            <label class="group-config-label">
+              <i class="fa-solid fa-layer-group"></i>
+              Estimasi Kelompok
+            </label>
+            <span class="group-members-preview" id="groupCountPreview">~7 kelompok</span>
+          </div>
         </div>
+
         <div class="group-config-row">
           <label class="group-config-label">
             <i class="fa-solid fa-shuffle"></i>
@@ -287,6 +335,7 @@
             <button class="mode-btn" data-mode="balanced">Seimbang</button>
           </div>
         </div>
+
         <button class="btn btn-primary group-generate-btn" id="groupGenerateBtn">
           <i class="fa-solid fa-wand-magic-sparkles"></i>
           Bagi Kelompok!
@@ -296,7 +345,7 @@
       <!-- Results Panel -->
       <div class="group-results" id="groupResults" style="display:none;">
         <div class="group-results-header">
-          <span class="group-results-label" id="groupResultsLabel">4 Kelompok · 37 Siswa</span>
+          <span class="group-results-label" id="groupResultsLabel">4 Kelompok · 36 Siswa</span>
           <button class="group-shuffle-again" id="groupShuffleAgain">
             <i class="fa-solid fa-shuffle"></i> Acak Ulang
           </button>
@@ -304,10 +353,16 @@
         <div class="groups-container" id="groupsContainer"></div>
         <div class="group-results-actions">
           <button class="btn btn-outline group-copy-btn" id="groupCopyBtn">
-            <i class="fa-solid fa-copy"></i> Salin Hasil
+            <i class="fa-solid fa-copy"></i> Salin
+          </button>
+          <button class="btn btn-outline group-export-png" id="groupExportPng">
+            <i class="fa-solid fa-image"></i> PNG
+          </button>
+          <button class="btn btn-outline group-export-pdf" id="groupExportPdf">
+            <i class="fa-solid fa-file-pdf"></i> PDF
           </button>
           <button class="btn btn-primary" id="groupBackBtn">
-            <i class="fa-solid fa-arrow-left"></i> Ubah Jumlah
+            <i class="fa-solid fa-arrow-left"></i> Ubah
           </button>
         </div>
       </div>
@@ -328,7 +383,6 @@
           <a href="#gallery">Gallery</a>
           <a href="#homeroom">Wali Kelas</a>
           <a href="#students">Students</a>
-
         </div>
         <div class="footer-social">
           <a href="https://www.instagram.com/elpiji_twobraka?igsh=MWlhajk0d2tha20zdQ==" aria-label="Instagram"
