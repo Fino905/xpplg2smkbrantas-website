@@ -49,7 +49,7 @@ const STUDENTS_DATA = [
   { no: 5, name: "Anandita Galuh Sekar Kinanti", role: "Siswa", initials: "AG", img: "image/Siswa/5. ANANDITA GALUH SEKAR KINANTI.jpg" },
   { no: 6, name: "Ardhelia Zheva Tentieagusty", role: "Siswa", initials: "AZ", img: "image/Siswa/6. ARDHELIA ZHEVA TENIEAGUSTY.jpg" },
   { no: 7, name: "Arkana Esa Dewa", role: "Siswa", initials: "AE", img: "image/Siswa/7. ARKANA ESA DEWA.jpg" },
-  { no: 8, name: "Admin Jembut And Fameboy", role: "Siswa", initials: "AG", img: "image/Siswa/arlan.png" },
+  { no: 8, name: "Arlan Girindawardana Putra", role: "Siswa", initials: "AG", img: "image/Siswa/arlan.png" },
   { no: 9, name: "Aura Bunga Savania", role: "Siswa", initials: "AB", img: "image/Siswa/9. AURA BUNGA SAVANIA.jpg" },
   { no: 10, name: "Azizatul Kunainah Nurfiani", role: "Siswa", initials: "AK", img: "image/Siswa/10. AZIZATUL KUNAINAH NURFIANI.jpg" },
   { no: 11, name: "Choerul Nuril Huda", role: "Siswa", initials: "CN", img: "image/Siswa/11. CHOERUL NURIL HUDA.jpg" },
