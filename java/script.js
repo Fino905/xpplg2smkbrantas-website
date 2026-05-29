@@ -78,6 +78,7 @@ const STUDENTS_DATA = [
   { no: 35, name: "Talitha Zaki Al Alub", role: "Siswa", initials: "TZ", img: "image/Siswa/35. TALITHA ZAKI AL ALUB.jpg" },
   { no: 36, name: "Wibian Junanta", role: "Siswa", initials: "WJ", img: "image/Siswa/36. WIBIAN JUNANTA.jpg" },
   { no: 37, name: "Yunita Salsabila", role: "Siswa", initials: "YS", img: "image/Siswa/37. YUNITA SALSABILA.jpg" },
+  { no: 37, name: "Yunita Salsabila", role: "Siswa", initials: "YS", img: "image/Siswa/37. YUNITA SALSABILA.jpg" },
 ];
 
 /* Color palette for groups — 18 warna */
