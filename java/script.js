@@ -49,7 +49,7 @@ const STUDENTS_DATA = [
   { no: 5, name: "Anandita Galuh Sekar Kinanti", role: "Siswa", initials: "AG", img: "image/Siswa/5. ANANDITA GALUH SEKAR KINANTI.jpg" },
   { no: 6, name: "Ardhelia Zheva Tentieagusty", role: "Siswa", initials: "AZ", img: "image/Siswa/6. ARDHELIA ZHEVA TENIEAGUSTY.jpg" },
   { no: 7, name: "Arkana Esa Dewa", role: "Siswa", initials: "AE", img: "image/Siswa/7. ARKANA ESA DEWA.jpg" },
-  { no: 8, name: "Arlan Girindawardana Putra RGB boss", role: "Siswa", initials: "AG", img: "image/Siswa/arlan.png" },
+  { no: 8, name: "Arlan Girindawardana Putra", role: "Siswa", initials: "AG", img: "image/Siswa/8. ARLAN GIRINDAWARDANA PUTRA>jpg" },
   { no: 9, name: "Aura Bunga Savania", role: "Siswa", initials: "AB", img: "image/Siswa/9. AURA BUNGA SAVANIA.jpg" },
   { no: 10, name: "Azizatul Kunainah Nurfiani", role: "Siswa", initials: "AK", img: "image/Siswa/10. AZIZATUL KUNAINAH NURFIANI.jpg" },
   { no: 11, name: "Choerul Nuril Huda", role: "Siswa", initials: "CN", img: "image/Siswa/11. CHOERUL NURIL HUDA.jpg" },
@@ -78,7 +78,6 @@ const STUDENTS_DATA = [
   { no: 35, name: "Talitha Zaki Al Alub", role: "Siswa", initials: "TZ", img: "image/Siswa/35. TALITHA ZAKI AL ALUB.jpg" },
   { no: 36, name: "Wibian Junanta", role: "Siswa", initials: "WJ", img: "image/Siswa/36. WIBIAN JUNANTA.jpg" },
   { no: 37, name: "Yunita Salsabila", role: "Siswa", initials: "YS", img: "image/Siswa/37. YUNITA SALSABILA.jpg" },
-  { no: 67, name: "Rezky Aditiya", role: "Siswa", initials: "RA", img: "image/Siswa/34. REZKY ADITYA.jpg" },
 ];
 
 /* Color palette for groups — 18 warna */
