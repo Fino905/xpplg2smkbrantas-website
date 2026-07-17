@@ -149,7 +149,7 @@ const HOMEROOM_DATA = {
   stats: [
     { val: "36", lbl: "Siswa" },
     { val: "2025", lbl: "Angkatan" },
-    { val: "PPLG", lbl: "Jurusan" },
+    { val: "RPL", lbl: "Jurusan" },
   ]
 };
 
