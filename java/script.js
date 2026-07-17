@@ -1,24 +1,150 @@
 /**
- * X PPLG 2 — Official Class Website
+ * XI RPL 2 — Official Class Website
  * script.js — Main JavaScript (REVISI)
  * Tambahan:
  *  - Group export PNG & PDF (html2canvas + jsPDF)
  *  - Mode per-anggota (berdasarkan jumlah anggota/kelompok)
  *  - Max 18 kelompok
  *  - Mobile responsive improvements
+ *  - Loading screen
  * ============================================================
  */
+
+/* ============================================================
+   LOADING SCREEN MODULE
+   ============================================================ */
+const LoadingScreen = (() => {
+  const STEPS = [
+    { pct: 15, msg: "Memuat aset halaman..." },
+    { pct: 35, msg: "Menyiapkan data siswa..." },
+    { pct: 55, msg: "Membangun galeri..." },
+    { pct: 72, msg: "Menginisialisasi komponen..." },
+    { pct: 88, msg: "Hampir selesai..." },
+    { pct: 100, msg: "Selamat datang di XI RPL 2! 🎉" },
+  ];
+
+  let stepIndex = 0;
+  let stepTimer = null;
+
+  function setProgress(pct, msg) {
+    const bar = document.getElementById('lsBar');
+    const status = document.getElementById('lsStatus');
+    if (bar) bar.style.width = pct + '%';
+    if (status) { status.style.opacity = '0'; setTimeout(() => { status.textContent = msg; status.style.opacity = '1'; }, 120); }
+  }
+
+  function runParticles() {
+    const canvas = document.getElementById('loadingParticles');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let raf;
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function spawn() {
+      particles = [];
+      const n = Math.floor(canvas.width / 22);
+      for (let i = 0; i < n; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 1.4 + 0.4,
+          speed: Math.random() * 0.35 + 0.08,
+          opacity: Math.random() * 0.45 + 0.05,
+          drift: (Math.random() - 0.5) * 0.25,
+        });
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(86,180,255,${p.opacity})`;
+        ctx.fill();
+        p.y -= p.speed;
+        p.x += p.drift;
+        if (p.y < -4) { p.y = canvas.height + 4; p.x = Math.random() * canvas.width; }
+        if (p.x < -4) p.x = canvas.width + 4;
+        if (p.x > canvas.width + 4) p.x = -4;
+      });
+      raf = requestAnimationFrame(draw);
+    }
+
+    resize();
+    spawn();
+    draw();
+    window.addEventListener('resize', () => { cancelAnimationFrame(raf); resize(); spawn(); draw(); });
+  }
+
+  function advanceStep() {
+    if (stepIndex >= STEPS.length) return;
+    const s = STEPS[stepIndex++];
+    setProgress(s.pct, s.msg);
+  }
+
+  function hide() {
+    const el = document.getElementById('loadingScreen');
+    if (!el) return;
+    setProgress(100, STEPS[STEPS.length - 1].msg);
+    setTimeout(() => {
+      el.classList.add('hide');
+      setTimeout(() => el.remove(), 650);
+    }, 500);
+  }
+
+  function init() {
+    runParticles();
+    advanceStep();
+
+    /* Simulate incremental loading ticks */
+    const intervals = [300, 280, 320, 260, 350];
+    let i = 0;
+    function tick() {
+      if (i < intervals.length) {
+        stepTimer = setTimeout(() => { advanceStep(); i++; tick(); }, intervals[i]);
+      }
+    }
+    tick();
+
+    /* Hide after page fully loaded (fonts, images, scripts) */
+    const dismiss = () => {
+      if (stepTimer) clearTimeout(stepTimer);
+      /* Jump to 100% then fade */
+      stepIndex = STEPS.length - 1;
+      hide();
+    };
+
+    if (document.readyState === 'complete') {
+      setTimeout(dismiss, 800);
+    } else {
+      window.addEventListener('load', () => setTimeout(dismiss, 600), { once: true });
+      /* Safety fallback — never freeze longer than 4s */
+      setTimeout(dismiss, 4000);
+    }
+  }
+
+  return { init };
+})();
+
+/* Start loading screen immediately — before DOM ready */
+LoadingScreen.init();
 
 /* ============================================================
    DATA
    ============================================================ */
 
 const HOMEROOM_DATA = {
-  name: "Eritzah Wahyu Sinthawati",
-  title: "Wali Kelas X PPLG 2",
-  subject: "Guru Mata Pelajaran PP (Pendidikan Pancasila)",
-  desc: "Sosok pembimbing yang penuh dedikasi dan semangat dalam mengarahkan generasi penerus teknologi. Selalu mendukung kreativitas dan inovasi setiap siswa di kelas X PPLG 2.",
-  img: "image/Walikelas.jpg",
+  name: "Lolita Bestari Dyahayu Oktaviana, S.Kom",
+  title: "Wali Kelas XI RPL 2",
+  subject: " - ",
+  desc: "Sosok pembimbing yang penuh dedikasi dan semangat dalam mengarahkan generasi penerus teknologi. Selalu mendukung kreativitas dan inovasi setiap siswa di kelas XI RPL 2.",
+  img: "image/Walikelas11.jpg",
   initials: "WK",
   stats: [
     { val: "36", lbl: "Siswa" },
@@ -28,9 +154,9 @@ const HOMEROOM_DATA = {
 };
 
 const GALLERY_DATA = [
-  { id: 1, title: "Cewe Kelas PPLG 2", category: "foto", img: "image/Gallery/cewe.jpg", tags: ["Angkatan 2025"] },
+  { id: 1, title: "Cewe Kelas XI RPL 2", category: "foto", img: "image/Gallery/cewe.jpg", tags: ["Angkatan 2025"] },
   { id: 5, title: "Foto Kelas", category: "foto", img: "image/Gallery/formal.jpg", tags: ["Angkatan 2025"] },
-  { id: 2, title: "Cowo Kelas PPLG 2", category: "foto", img: "image/Gallery/cowo1.jpg", tags: ["Angkatan 2025"] },
+  { id: 2, title: "Cowo Kelas XI RPL 2", category: "foto", img: "image/Gallery/cowo1.jpg", tags: ["Angkatan 2025"] },
   { id: 4, title: "Miniatur Pengolahan Bahan", category: "kegiatan", img: "image/Gallery/minimap.jpg", tags: ["Sumatif 3"] },
   { id: 6, title: "Hari Pahlawan", category: "event", img: "image/Gallery/IMG-20251028-WA0069.jpg", tags: ["Lapangan"] },
   { id: 8, title: "Ngerujak", category: "kegiatan", img: "image/Gallery/IMG-20251025-WA0063.jpg", tags: ["Rutin"] },
@@ -49,35 +175,35 @@ const STUDENTS_DATA = [
   { no: 5, name: "Anandita Galuh Sekar Kinanti", role: "Siswa", initials: "AG", img: "image/Siswa/5. ANANDITA GALUH SEKAR KINANTI.jpg" },
   { no: 6, name: "Ardhelia Zheva Tentieagusty", role: "Siswa", initials: "AZ", img: "image/Siswa/6. ARDHELIA ZHEVA TENIEAGUSTY.jpg" },
   { no: 7, name: "Arkana Esa Dewa", role: "Siswa", initials: "AE", img: "image/Siswa/7. ARKANA ESA DEWA.jpg" },
-  { no: 8, name: "Arlan Girindawardana Putra", role: "Siswa", initials: "AG", img: "image/Siswa/8. ARLAN GIRINDRAWARDANA PUTRA.jpg" },
+  { no: 8, name: "Arlan Girindrawardana Putra", role: "Siswa", initials: "AG", img: "image/Siswa/8. ARLAN GIRINDRAWARDANA PUTRA.jpg" },
   { no: 9, name: "Aura Bunga Savania", role: "Siswa", initials: "AB", img: "image/Siswa/9. AURA BUNGA SAVANIA.jpg" },
   { no: 10, name: "Azizatul Kunainah Nurfiani", role: "Siswa", initials: "AK", img: "image/Siswa/10. AZIZATUL KUNAINAH NURFIANI.jpg" },
   { no: 11, name: "Choerul Nuril Huda", role: "Siswa", initials: "CN", img: "image/Siswa/11. CHOERUL NURIL HUDA.jpg" },
   { no: 12, name: "Desi Eka Wati", role: "Siswa", initials: "DE", img: "image/Siswa/12. DESI EKA WATI.jpg" },
-  { no: 14, name: "Fadhil Akbar Hermansyah", role: "Siswa", initials: "FA", img: "image/Siswa/14. FADHIL AKBAR HERMANSYAH.jpg" },
-  { no: 15, name: "Febian Nikko Ferdi Ansyah", role: "Siswa", initials: "FN", img: "image/Siswa/15. FEBIAN NIKKO FERDI ANSYAH.jpg" },
-  { no: 16, name: "Fhirly Adysta Putri", role: "Siswa", initials: "FA", img: "image/Siswa/16. FHIRLY ADYSTA PUTRI.jpg" },
-  { no: 17, name: "Grendy Arvel Putra Agusti", role: "Siswa", initials: "GA", img: "image/Siswa/17. GRENDY ARVEL PUTRA AGUSTI.jpg" },
-  { no: 18, name: "Habib Alfino Febrianto", role: "Siswa", initials: "HA", img: "image/Siswa/18. HABIB ALFINO FEBRIANTO.jpg" },
-  { no: 19, name: "Hanna Belinda", role: "Siswa", initials: "HB", img: "image/Siswa/19. HANNA BELINDA.jpg" },
-  { no: 20, name: "Indi Agri Faresa", role: "Siswa", initials: "IA", img: "image/Siswa/20. INDI AGRI FARESA.jpg" },
-  { no: 21, name: "Jenny Beby Cantika", role: "Siswa", initials: "JB", img: "image/Siswa/21. JENNY BEBY CANTIKA.jpg" },
-  { no: 22, name: "Kanzha Ariesna Rahmadhany", role: "Siswa", initials: "KA", img: "image/Siswa/22. KANZHA ARIESNA RAHMADHANY.jpg" },
-  { no: 23, name: "Kesya Dwi Oktaviola", role: "Siswa", initials: "KD", img: "image/Siswa/23. KESYA DWI OKTAVIOLA.jpg" },
-  { no: 24, name: "Lukluul Diniyah Fitra", role: "Siswa", initials: "LD", img: "image/Siswa/24. LUKLUUL DINIYAH FITRA.jpg" },
-  { no: 25, name: "Maura Natania", role: "Siswa", initials: "MN", img: "image/Siswa/25. MAURA NATANIA.jpg" },
-  { no: 26, name: "Melda Okta Maulana", role: "Siswa", initials: "MO", img: "image/Siswa/26. MELDA OKTA MAULANA.jpg" },
-  { no: 27, name: "Muhammad Mubarok", role: "Siswa", initials: "MM", img: "image/Siswa/27. MUHAMMAD MUBAROK.jpg" },
-  { no: 28, name: "Nazna Deandra Alifiah Putri", role: "Siswa", initials: "ND", img: "image/Siswa/28. NAZNA DEANDRA ALIFIAH PUTRI.jpg" },
-  { no: 29, name: "Nindi Faulina Defita Rani", role: "Siswa", initials: "NF", img: "image/Siswa/29. NINDI FAULINA DEFITA RANI.jpg" },
-  { no: 30, name: "Nur Widhia Sallamah", role: "Siswa", initials: "NW", img: "image/Siswa/30. NUR WIDHIA SALLAMAH.jpg" },
-  { no: 31, name: "Olivia Eka Pratiwi", role: "Siswa", initials: "OE", img: "image/Siswa/31. OLIVIA EKA PRATIWI.jpg" },
-  { no: 32, name: "Raihaan Adian Tamaami", role: "Siswa", initials: "RA", img: "image/Siswa/32. RAIHAN ADIAN TAMAAMIL.jpg" },
-  { no: 33, name: "Rika Aulia Sari", role: "Siswa", initials: "RS", img: "image/Siswa/33. RIKA AULIA SARI.jpg" },
-  { no: 34, name: "Shindy Aura Cantika", role: "Siswa", initials: "SA", img: "image/Siswa/34. SHINDY AURA CANTIKA.jpg" },
-  { no: 35, name: "Talitha Zaki Al Alub", role: "Siswa", initials: "TZ", img: "image/Siswa/35. TALITHA ZAKI AL ALUB.jpg" },
-  { no: 36, name: "Wibian Junanta", role: "Siswa", initials: "WJ", img: "image/Siswa/36. WIBIAN JUNANTA.jpg" },
-  { no: 37, name: "Yunita Salsabila", role: "Siswa", initials: "YS", img: "image/Siswa/37. YUNITA SALSABILA.jpg" },
+  { no: 13, name: "Fadhil Akbar Hermansyah", role: "Siswa", initials: "FA", img: "image/Siswa/14. FADHIL AKBAR HERMANSYAH.jpg" },
+  { no: 14, name: "Febian Nikko Ferdi Ansyah", role: "Siswa", initials: "FN", img: "image/Siswa/15. FEBIAN NIKKO FERDI ANSYAH.jpg" },
+  { no: 15, name: "Fhirly Adysta Putri", role: "Siswa", initials: "FA", img: "image/Siswa/16. FHIRLY ADYSTA PUTRI.jpg" },
+  { no: 16, name: "Grendy Arvel Putra Agusti", role: "Siswa", initials: "GA", img: "image/Siswa/17. GRENDY ARVEL PUTRA AGUSTI.jpg" },
+  { no: 17, name: "Habib Alfino Febrianto", role: "Siswa", initials: "HA", img: "image/Siswa/18. HABIB ALFINO FEBRIANTO.jpg" },
+  { no: 18, name: "Hanna Belinda", role: "Siswa", initials: "HB", img: "image/Siswa/19. HANNA BELINDA.jpg" },
+  { no: 19, name: "Indi Agri Faresa", role: "Siswa", initials: "IA", img: "image/Siswa/20. INDI AGRI FARESA.jpg" },
+  { no: 20, name: "Jenny Beby Cantika", role: "Siswa", initials: "JB", img: "image/Siswa/21. JENNY BEBY CANTIKA.jpg" },
+  { no: 21, name: "Kanzha Ariesna Rahmadhany", role: "Siswa", initials: "KA", img: "image/Siswa/22. KANZHA ARIESNA RAHMADHANY.jpg" },
+  { no: 22, name: "Kesya Dwi Oktaviola", role: "Siswa", initials: "KD", img: "image/Siswa/23. KESYA DWI OKTAVIOLA.jpg" },
+  { no: 23, name: "Lukluul Diniyah Fitra", role: "Siswa", initials: "LD", img: "image/Siswa/24. LUKLUUL DINIYAH FITRA.jpg" },
+  { no: 24, name: "Maura Natania", role: "Siswa", initials: "MN", img: "image/Siswa/25. MAURA NATANIA.jpg" },
+  { no: 25, name: "Melda Okta Maulana", role: "Siswa", initials: "MO", img: "image/Siswa/26. MELDA OKTA MAULANA.jpg" },
+  { no: 26, name: "Muhammad Mubarok", role: "Siswa", initials: "MM", img: "image/Siswa/27. MUHAMMAD MUBAROK.jpg" },
+  { no: 27, name: "Nazna Deandra Alifiah Putri", role: "Siswa", initials: "ND", img: "image/Siswa/28. NAZNA DEANDRA ALIFIAH PUTRI.jpg" },
+  { no: 28, name: "Nindi Faulina Defita Rani", role: "Siswa", initials: "NF", img: "image/Siswa/29. NINDI FAULINA DEFITA RANI.jpg" },
+  { no: 29, name: "Nur Widhia Sallamah", role: "Siswa", initials: "NW", img: "image/Siswa/30. NUR WIDHIA SALLAMAH.jpg" },
+  { no: 30, name: "Olivia Eka Pratiwi", role: "Siswa", initials: "OE", img: "image/Siswa/31. OLIVIA EKA PRATIWI.jpg" },
+  { no: 31, name: "Raihaan Adian Tamaamil", role: "Siswa", initials: "RA", img: "image/Siswa/32. RAIHAN ADIAN TAMAAMIL.jpg" },
+  { no: 32, name: "Rika Aulia Sari", role: "Siswa", initials: "RS", img: "image/Siswa/33. RIKA AULIA SARI.jpg" },
+  { no: 33, name: "Shindy Aura Cantika", role: "Siswa", initials: "SA", img: "image/Siswa/34. SHINDY AURA CANTIKA.jpg" },
+  { no: 34, name: "Talitha Zaki Al Alub", role: "Siswa", initials: "TZ", img: "image/Siswa/35. TALITHA ZAKI AL ALUB.jpg" },
+  { no: 35, name: "Wibian Junanta", role: "Siswa", initials: "WJ", img: "image/Siswa/36. WIBIAN JUNANTA.jpg" },
+  { no: 36, name: "Yunita Salsabila", role: "Siswa", initials: "YS", img: "image/Siswa/37. YUNITA SALSABILA.jpg" },
 ];
 
 /* Color palette for groups — 18 warna */
@@ -524,9 +650,9 @@ const Students = (() => {
     grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
     grid.querySelectorAll('.student-card').forEach(card => {
-      card.addEventListener('click', () => window.openStudentModal(+card.dataset.studentNo));
+      card.addEventListener('click', () => window.openPortfolioModal(+card.dataset.studentNo));
       card.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') window.openStudentModal(+card.dataset.studentNo);
+        if (e.key === 'Enter' || e.key === ' ') window.openPortfolioModal(+card.dataset.studentNo);
       });
       card.addEventListener('mousemove', e => {
         const rect = card.getBoundingClientRect();
@@ -624,6 +750,173 @@ const Students = (() => {
     document.getElementById('studentModalBackdrop').addEventListener('click', close);
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && document.getElementById('studentModal').classList.contains('open')) close();
+    });
+  });
+})();
+
+/* ============================================================
+   STUDENT PORTFOLIO MODAL MODULE
+   ============================================================ */
+
+/* Extended portfolio data — bisa dilengkapi sesuai data asli */
+const PORTFOLIO_DATA = {
+  /* Default template; di-override per-siswa jika ada data khusus */
+  default: {
+    hobbies: "—",
+    favoriteSubject: "—",
+    aspiration: "—",
+    about: "Siswa aktif kelas XI RPL 2, SMK Brantas Karangkates.",
+    skills: ["HTML/CSS", "JavaScript", "Problem Solving", "Teamwork"],
+    achievements: []
+  },
+  /* Contoh data khusus — silakan lengkapi sesuai data siswa */
+  1: { hobbies: "Gaming, Coding", favoriteSubject: "Pemrograman", aspiration: "Software Engineer", about: "Semangat belajar teknologi dan senang berkolaborasi dalam tim.", skills: ["HTML/CSS", "JavaScript", "Python"], achievements: [] },
+  2: { hobbies: "Membaca, Olahraga", favoriteSubject: "Matematika", aspiration: "Data Scientist", about: "Tertarik dengan data dan algoritma.", skills: ["Python", "Logika", "Matematika"], achievements: [] },
+  3: { hobbies: "Desain, Menggambar", favoriteSubject: "Seni & Desain", aspiration: "UI/UX Designer", about: "Kreatif dan suka membuat desain yang estetik.", skills: ["Figma", "Adobe XD", "Illustrator"], achievements: [] },
+  4: { hobbies: "Memasak, Musik", favoriteSubject: "Bahasa Indonesia", aspiration: "Web Developer", about: "Aktif dan suka bereksperimen dengan hal-hal baru.", skills: ["HTML/CSS", "Canva", "Teamwork"], achievements: [] },
+};
+
+function getPortfolioData(no) {
+  return { ...PORTFOLIO_DATA.default, ...(PORTFOLIO_DATA[no] || {}) };
+}
+
+/* Gradient palette for hero banner based on student number */
+const HERO_GRADIENTS = [
+  "135deg, #1a6fff 0%, #56b4ff 100%",
+  "135deg, #ff6ab0 0%, #ffd06a 100%",
+  "135deg, #22e87a 0%, #4dd9ff 100%",
+  "135deg, #d06aff 0%, #ff6ab0 100%",
+  "135deg, #ff8c6a 0%, #ffd06a 100%",
+  "135deg, #4dffee 0%, #4d8aff 100%",
+];
+
+(function wirePortfolioModal() {
+  function open(no) {
+    const modal = document.getElementById('portfolioModal');
+    const student = STUDENTS_DATA.find(s => s.no === no);
+    if (!student) return;
+
+    const pdata = getPortfolioData(no);
+
+    /* Avatar */
+    const img = document.getElementById('portfolioAvatarImg');
+    const ph = document.getElementById('portfolioAvatarPh');
+    if (student.img) {
+      img.src = student.img;
+      img.alt = `Foto ${student.name}`;
+      img.style.display = 'block';
+      ph.style.display = 'none';
+      img.onerror = () => { img.style.display = 'none'; ph.textContent = student.initials; ph.style.display = 'flex'; };
+    } else {
+      img.style.display = 'none';
+      ph.textContent = student.initials;
+      ph.style.display = 'flex';
+    }
+
+    /* Hero gradient */
+    const heroEl = document.getElementById('portfolioHero');
+    heroEl.style.background = `linear-gradient(${HERO_GRADIENTS[no % HERO_GRADIENTS.length]})`;
+    document.getElementById('portfolioHeroDeco').textContent = student.initials;
+
+    /* Info */
+    document.getElementById('portfolioNumber').textContent = `#${String(student.no).padStart(2, '0')}`;
+    document.getElementById('portfolioName').textContent = student.name;
+    document.getElementById('portfolioRole').textContent = student.role + ' · XI RPL 2';
+
+    /* Bio tab */
+    const bioGrid = document.getElementById('portfolioBioGrid');
+    bioGrid.innerHTML = `
+      <div class="portfolio-bio-item">
+        <div class="portfolio-bio-label"><i class="fa-solid fa-hashtag"></i> Nomor Absen</div>
+        <div class="portfolio-bio-value">${String(student.no).padStart(2, '0')}</div>
+      </div>
+      <div class="portfolio-bio-item">
+        <div class="portfolio-bio-label"><i class="fa-solid fa-school"></i> Kelas</div>
+        <div class="portfolio-bio-value">XI RPL 2</div>
+      </div>
+      <div class="portfolio-bio-item">
+        <div class="portfolio-bio-label"><i class="fa-solid fa-heart"></i> Hobi</div>
+        <div class="portfolio-bio-value">${pdata.hobbies}</div>
+      </div>
+      <div class="portfolio-bio-item">
+        <div class="portfolio-bio-label"><i class="fa-solid fa-book-open"></i> Mata Pelajaran Favorit</div>
+        <div class="portfolio-bio-value">${pdata.favoriteSubject}</div>
+      </div>
+      <div class="portfolio-bio-item portfolio-bio-full">
+        <div class="portfolio-bio-label"><i class="fa-solid fa-star"></i> Cita-cita</div>
+        <div class="portfolio-bio-value">${pdata.aspiration}</div>
+      </div>
+      <div class="portfolio-bio-about portfolio-bio-full">
+        <div class="portfolio-bio-about-label"><i class="fa-solid fa-quote-left"></i> Tentang Saya</div>
+        ${pdata.about}
+      </div>
+    `;
+
+    /* Skills tab */
+    const skillsEl = document.getElementById('portfolioSkillsContent');
+    if (pdata.skills && pdata.skills.length > 0) {
+      const skillIcons = { 'HTML/CSS': 'fa-code', 'JavaScript': 'fa-js', 'Python': 'fa-python', 'Figma': 'fa-figma', default: 'fa-star' };
+      skillsEl.innerHTML = `
+        <div class="portfolio-skills-list">
+          ${pdata.skills.map(sk => {
+        const icon = skillIcons[sk] || skillIcons.default;
+        return `<span class="portfolio-skill-tag"><i class="fa-brands ${icon}" onerror="this.className='fa-solid fa-code'"></i> ${sk}</span>`;
+      }).join('')}
+        </div>`;
+    } else {
+      skillsEl.innerHTML = `<div class="portfolio-empty"><i class="fa-solid fa-code"></i>Belum ada data keahlian.</div>`;
+    }
+
+    /* Achievements tab */
+    const achEl = document.getElementById('portfolioAchievementsContent');
+    if (pdata.achievements && pdata.achievements.length > 0) {
+      achEl.innerHTML = `<div class="portfolio-achievement-list">${pdata.achievements.map(a => `
+          <div class="portfolio-achievement-item">
+            <div class="portfolio-achievement-icon"><i class="fa-solid fa-trophy"></i></div>
+            <div>
+              <div class="portfolio-achievement-title">${a.title}</div>
+              <div class="portfolio-achievement-desc">${a.desc}</div>
+            </div>
+          </div>`).join('')
+        }</div>`;
+    } else {
+      achEl.innerHTML = `<div class="portfolio-empty"><i class="fa-solid fa-trophy"></i>Belum ada prestasi tercatat.</div>`;
+    }
+
+    /* Reset tab ke Bio */
+    document.querySelectorAll('.portfolio-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.portfolio-tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelector('.portfolio-tab-btn[data-tab="bio"]').classList.add('active');
+    document.querySelector('[data-tab-content="bio"]').classList.add('active');
+
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close() {
+    document.getElementById('portfolioModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  window.openPortfolioModal = open;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('portfolioModalClose').addEventListener('click', close);
+    document.getElementById('portfolioModalBackdrop').addEventListener('click', close);
+
+    /* Tab switching */
+    document.querySelectorAll('.portfolio-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.portfolio-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.portfolio-tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelector(`[data-tab-content="${tab}"]`).classList.add('active');
+      });
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && document.getElementById('portfolioModal').classList.contains('open')) close();
     });
   });
 })();
@@ -865,7 +1158,7 @@ const GroupPicker = (() => {
 
   /* ── COPY ── */
   function copyResults() {
-    let text = `=== Pembagian Kelompok X PPLG 2 ===\n\n`;
+    let text = `=== Pembagian Kelompok XI RPL 2 ===\n\n`;
     currentGroups.forEach((members, gi) => {
       text += `Kelompok ${gi + 1}:\n`;
       members.forEach(s => {
@@ -909,11 +1202,11 @@ const GroupPicker = (() => {
 
     snap.innerHTML = `
       <div class="snap-header">
-        <div class="snap-title">Pembagian Kelompok X PPLG 2</div>
+        <div class="snap-title">Pembagian Kelompok XI RPL 2</div>
         <div class="snap-subtitle">${groupCount_} Kelompok · ${STUDENTS_DATA.length} Siswa · ${now}</div>
       </div>
       <div class="snap-grid">${cardsHTML}</div>
-      <div class="snap-footer">X PPLG 2 · SMK Brantas Karangkates · ${now}</div>
+      <div class="snap-footer">XI RPL 2 · SMK Brantas Karangkates · ${now}</div>
     `;
 
     document.body.appendChild(snap);
@@ -1142,7 +1435,7 @@ const Navbar = (() => {
   }
 
   function updateActiveLink() {
-    const sections = ['home', 'gallery', 'homeroom', 'students'];
+    const sections = ['home', 'gallery', 'homeroom', 'students', 'structure'];
     const scrollY = window.scrollY + 100;
     let activeId = sections[0];
     sections.forEach(id => {
@@ -1225,6 +1518,72 @@ function initSmoothScroll() {
     });
   });
 }
+
+/* ============================================================
+   KODE TAMBAHAN (PENGAYAAN FITUR & AKSESIBILITAS)
+   ============================================================ */
+
+/* ── 1. Fungsionalitas Keyboard Accessibility Untuk Modal & Galeri ── */
+document.addEventListener('keydown', (e) => {
+  const activeModal = document.querySelector('.modal.open, .lightbox.open, #groupModal.open, #randomModal.open, #portfolioModal.open');
+  if (!activeModal) return;
+
+  // Shortcut tombol 'Esc' untuk menutup semua modal yang sedang terbuka secara aman
+  if (e.key === 'Escape') {
+    const closeButtons = activeModal.querySelectorAll('[id*="Close"], [id*="Btn"], .close-btn');
+    if (closeButtons.length > 0) {
+      closeButtons[0].click();
+    } else {
+      // Fallback jika tombol close spesifik tidak terpicu
+      activeModal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  }
+});
+
+/* ── 2. Optimasi Event Resize Menggunakan Debounce ── */
+// Mencegah penurunan performa (lagging) saat orientasi layar HP berubah atau jendela di-resize
+let resizeTimeout;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    // Memastikan modul partikel loading screen mendeteksi ukuran layar baru jika masih aktif
+    const loadingCanvas = document.getElementById('loadingParticles');
+    if (loadingCanvas && typeof loadingCanvas.getContext === 'function') {
+      const ctx = loadingCanvas.getContext('2d');
+      loadingCanvas.width = window.innerWidth;
+      loadingCanvas.height = window.innerHeight;
+    }
+  }, 250);
+});
+
+/* ── 3. Sinkronisasi Fokus Input Pencarian Siswa ── */
+// Efek interaktif visual tambahan saat pengguna mengetik di kolom pencarian siswa
+const searchInput = document.getElementById('studentSearch');
+if (searchInput) {
+  searchInput.addEventListener('focus', () => {
+    searchInput.parentElement.classList.add('search-focused');
+  });
+  searchInput.addEventListener('blur', () => {
+    searchInput.parentElement.classList.remove('search-focused');
+  });
+}
+
+/* ── 4. Fitur Validasi Ekspor Kelompok Semesta ── */
+// Logika pencegahan error jika pengguna menekan tombol ekspor PNG/PDF sebelum kelompok di-generate
+const pngBtn = document.getElementById('groupExportPng');
+const pdfBtn = document.getElementById('groupExportPdf');
+
+function checkGroupGenerated(e) {
+  const container = document.getElementById('groupsContainer');
+  if (!container || container.children.length === 0) {
+    e.stopImmediatePropagation(); // Menghentikan proses ekspor bawaan
+    showToast('Silakan generate kelompok terlebih dahulu!', 'fa-excounter-circle');
+  }
+}
+
+if (pngBtn) pngBtn.addEventListener('click', checkGroupGenerated, { capture: true });
+if (pdfBtn) pdfBtn.addEventListener('click', checkGroupGenerated, { capture: true });
 
 /* ============================================================
    INIT — DOMContentLoaded
