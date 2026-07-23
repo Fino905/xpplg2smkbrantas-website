@@ -160,7 +160,6 @@ const GALLERY_DATA = [
   { id: 4, title: "Miniatur Pengolahan Bahan", category: "kegiatan", img: "image/Gallery/minimap.jpg", tags: ["Sumatif 3"] },
   { id: 6, title: "Hari Pahlawan", category: "event", img: "image/Gallery/IMG-20251028-WA0069.jpg", tags: ["Lapangan"] },
   { id: 8, title: "Ngerujak", category: "kegiatan", img: "image/Gallery/IMG-20251025-WA0063.jpg", tags: ["Rutin"] },
-  { id: 10, title: "Bukber", category: "kegiatan", img: "image/Gallery/bukber.jpg", tags: ["Belajar"] },
   { id: 12, title: "Peringatan Hari Guru", category: "event", img: "image/Gallery/motion_photo_6586712432520767369.jpg", tags: ["Hari Spesial"] },
   { id: 13, title: "Mukbang MBG By Huda Gizi Nasional", category: "kegiatan", img: "image/Gallery/Mukbang.jpg", tags: ["UKK"] },
   { id: 14, title: "Pondok Ramadhan", category: "event", img: "image/bg.jpg", tags: ["Hari Spesial"] },
