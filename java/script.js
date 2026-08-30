@@ -164,6 +164,7 @@ const GALLERY_DATA = [
   { id: 13, title: "Mukbang MBG By Huda Gizi Nasional", category: "kegiatan", img: "image/Gallery/Mukbang.jpg", tags: ["UKK"] },
   { id: 14, title: "Pondok Ramadhan", category: "event", img: "image/bg.jpg", tags: ["Hari Spesial"] },
   { id: 16, title: "Game Jam Internal", category: "kegiatan", img: "image/Gallery/IMG-20251218-WA0010.jpg", tags: ["PPLG"] },
+   { id: 16, title: "LBB bersama", category: "kegiatan", img: "image/Gallery/IMG-20260803-WA0004.jpg", tags: ["PPLG"] },
 ];
 
 const STUDENTS_DATA = [
