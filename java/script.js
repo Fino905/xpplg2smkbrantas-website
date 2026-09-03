@@ -144,7 +144,7 @@ const HOMEROOM_DATA = {
   title: "Wali Kelas XI RPL 2",
   subject: " - ",
   desc: "Sosok pembimbing yang penuh dedikasi dan semangat dalam mengarahkan generasi penerus teknologi. Selalu mendukung kreativitas dan inovasi setiap siswa di kelas XI RPL 2.",
-  img: "image/Walikelas11.jpg",
+  img: "image/wk11.jpeg",
   initials: "WK",
   stats: [
     { val: "36", lbl: "Siswa" },
